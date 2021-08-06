@@ -1,0 +1,261 @@
+* {
+  box-sizing: border-box;
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  /* color: #111b3a; */
+}
+
+/* body {
+  background-color: #fffefc;
+} */
+#wrapper {
+  padding: 0;
+}
+
+#wrapper > * {
+  padding: 0;
+}
+
+/* .left {
+  background-color: lightcoral;
+} */
+
+/* .middle {
+  background-color: lightgreen;
+} */
+
+/* .right {
+  background-color: rgb(196, 29, 160);
+} */
+
+.yellow {
+  background-color: #efe3d0;
+}
+
+.green {
+  background-color: #93d9a3;
+}
+
+.blue {
+  background-color: #a2dbfa;
+}
+
+.middle-bg {
+  background-color: #fdf7eb;
+}
+
+/* Color theme */
+
+.theme-color {
+  background-color: #84bd94;
+}
+
+.light-gray-text {
+  color: #b8bec6;
+}
+
+.gray-text {
+  color: #666c7c;
+}
+
+.black-text {
+  color: #2f3853;
+}
+
+/* ---------- */
+.scrollable {
+  overflow-y: scroll;
+}
+
+.active-mail {
+  background-color: #fffcf7 !important;
+  box-shadow: rgba(0, 0, 0, 0.08) 0 4px 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+}
+
+/* Height */
+.middle {
+  height: 100vh;
+  padding-top: 15px !important;
+}
+.column-header {
+  height: 80px;
+}
+
+.middle .content {
+  height: calc(100vh - 80px - 15px);
+}
+
+.right .content {
+  height: calc(100vh - 80px);
+}
+
+.middle .content .all-mails-wrapper {
+  height: calc(100vh - 140px);
+}
+
+/* Left */
+.left .left-wrapper {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.left .column-header {
+  padding-top: 25px;
+  border-bottom: 2px solid #f5d3ba;
+}
+.left .logo-img-wrapper {
+  display: flex;
+  align-items: center;
+}
+.left .content {
+  padding-top: 30px;
+}
+
+.left .content #compose {
+  width: 100%;
+}
+.left .content ul {
+  list-style-type: none;
+  padding-left: 10px;
+  font-weight: bold;
+  margin-top: 40px;
+}
+
+.left .content ul li span {
+  color: #29334e;
+}
+
+.left .content ul li i {
+  color: #bec4cd;
+}
+/* Middle */
+/* .middle .content {
+
+} */
+
+.middle .column-header {
+  height: 65px;
+  padding-top: 15px;
+  border-bottom: 2px solid #ffefe4;
+}
+
+.middle .middle-bg {
+  border-radius: 20px;
+}
+.search-form {
+  width: 80%;
+  margin: auto;
+}
+
+.search-form input {
+  background-color: #f5d3ba;
+  border: none;
+  border-radius: 10px;
+}
+
+.middle .all-mails-wrapper {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.middle .all-mails-wrapper a {
+  border: none;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: all 0.1s;
+  margin: 10px 0;
+}
+
+.middle .all-mails-wrapper a:hover {
+  background-color: white;
+}
+
+.middle .all-mails-wrapper .mail-preview {
+  padding-right: 5px;
+  padding-left: 15px;
+}
+
+.middle .all-mails-wrapper .right-mail {
+  padding: 0 10px;
+  color: #8c9ab0;
+  font-size: 14px;
+}
+
+/* Right */
+.right .right-wrapper {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.right .content {
+  padding: 20px 30px;
+}
+
+.right .column-header {
+  padding-top: 30px;
+  border-bottom: 2px solid #ffefe4;
+}
+
+.right .column-header i {
+  color: #a2aab4;
+}
+
+.right .left-mail img {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+}
+.right .left-mail div {
+  padding-top: 8px;
+  padding-left: 10px;
+}
+
+.right .right-mail {
+  padding-top: 10px;
+}
+
+.right .previous-emails a {
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #eceef1;
+  border-top: 1px solid #eceef1;
+  padding: 0;
+  background-color: transparent;
+}
+
+.right .sender-info-left .info {
+  padding-left: 10px;
+}
+
+#click-see-more-btn {
+  border: none;
+}
+
+#click-see-more-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/*  Scrollbar styling  */
+/* width */
+.middle ::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.middle ::-webkit-scrollbar-track {
+  background: #fff5e1;
+}
+
+/* Handle */
+.middle ::-webkit-scrollbar-thumb {
+  background: #fee2cc52;
+}
+
+/* Handle on hover */
+.middle ::-webkit-scrollbar-thumb:hover {
+  background: #f5d3ba;
+}
