@@ -71,8 +71,31 @@ function load_mailbox(mailbox) {
 const showEmails = (mailbox, email_list) => {
 
     let emailWrapper = document.createElement('div')
-    // Add content to element:
-    email_list.forEach((email) => {
+    if (mailbox === 'sent') {
+        // Do not add archive btn
+        email_list.forEach((email) => {
+        let emailContainer = document.createElement('div');
+        emailContainer.innerHTML = `
+            <div class="" style="background: lightyellow">
+                <li>Email id: ${email.id}</li>
+                <li>Read status: ${email.read}</li>
+                <li>Archived status: ${email.archived}</li>
+                <li>From: ${email.sender}</li>
+                <li>To: ${email.recipients}</li>
+                <li>Subject: ${email.subject}</li>
+                <li>${email.timestamp}</li>                
+            </div>
+            <hr>
+        `;
+        // Add event show Email to email div
+        emailContainer.addEventListener('click', () => {showEmail(`${email.id}`)});
+
+        // Add event archive to archive btn
+        emailWrapper.append(emailContainer);
+    });
+    } else {
+        // Add archive btn
+        email_list.forEach((email) => {
         let emailContainer = document.createElement('div');
         emailContainer.innerHTML = `
             <div class="" style="background: lightyellow">
@@ -93,6 +116,7 @@ const showEmails = (mailbox, email_list) => {
         // Add event archive to archive btn
         emailWrapper.append(emailContainer);
     });
+    }
 
     document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
     document.querySelector('#emails-view').append(emailWrapper);
