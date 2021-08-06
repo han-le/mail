@@ -77,13 +77,14 @@ const showEmails = (mailbox, email_list) => {
         emailContainer.innerHTML = `
             <div class="" style="background: lightyellow">
                 <li>Email id: ${email.id}</li>
-                <li>Read?: ${email.read}</li>
+                <li>Read status: ${email.read}</li>
+                <li>Archived status: ${email.archived}</li>
                 <li>From: ${email.sender}</li>
                 <li>To: ${email.recipients}</li>
                 <li>Subject: ${email.subject}</li>
                 <li>${email.timestamp}</li>                
             </div>
-            <button onclick="archive(${email})">Archive</button>
+            <button onclick="archiveEmail(${email.id}, ${email.archived}, event)">Archive</button>
             <hr>
         `;
         // Add event show Email to email div
@@ -174,33 +175,38 @@ const renderEmailView = (email) => {
 
 const markAsRead = (email) => {
     let url = `emails/${email.id}`;
+
     fetch(url, {
-        method: 'PUT',
-        body: JSON.stringify({
+      body: JSON.stringify({
             read: true
-        })
-    }).then((response) => {
-        response.json()
-            .then(result => {
-                console.log(result)})
-    }).catch((err) => {
-        console.log(err)
+      }),
     })
-    console.log('Mark this email as read');
+    .then(data => {
+        console.log('Success: Marked as read', data);
+    })
+    .catch((error) => {
+      console.log('Error:', error);
+    });
 }
 
-const archive = (email) => {
-    console.log(email)
-    // let url = `emails/${email.id}`;
-    // fetch(url, {
-    //     method: 'PUT',
-    //     body: JSON.stringify({
-    //         archived: email.archived !== true
-    //     })
-    // }).then(r => r.json()).then(result => {
-    //     console.log(result)}).catch(err => {
-    //     console.log(err)})
-    // console.log('Mark archived as:' + email.archived)
+const archiveEmail = (email_id, archived_status, event) => {
+    // Stop calling the event above it
+    event.stopPropagation();
+    let url = 'emails/' + email_id;
+
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify({
+          archived: archived_status !== true
+      })
+    })
+    .then(response => {
+        console.log('Marked/Unmarked as archived Success:', response);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+
 }
 //
 // const test = (event, id) => {
@@ -212,6 +218,6 @@ const archive = (email) => {
 //     console.log('Test function works', id)
 // }
 
-const test = (email) => {
-    console.log(email)
+const test = (emailID, status) => {
+    console.log(emailID, status)
 }
