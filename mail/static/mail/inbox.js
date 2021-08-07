@@ -128,52 +128,79 @@ const showEmails = (mailbox, email_list) => {
 }
 
 const sendEmail = () => {
-    console.log('This loads when sendEmail is called')
+    console.log('1. This loads when sendEmail is called')
     const composeForm = document.getElementById('compose-form');
     composeForm.onsubmit = function (event) {
-        console.log('This loads when form is submitted ');
-        console.log(event);
+        event.preventDefault();
+        console.log('2. This loads when compose form is submitted ');
+        let messageDiv = document.getElementById('message');
+        // messageDiv.innerHTML = result.message;
 
         // Get the data input from user:
         let recipients = document.getElementById('compose-recipients').value;
         let subject = document.getElementById('compose-subject').value;
         let body = document.getElementById('compose-body').value;
-        console.log('Value of the input')
-        console.log(recipients);
-        console.log(subject);
-        console.log(body);
+        // console.log('3. Email content:')
+        // console.log(recipients);
+        // console.log(subject);
+        // console.log(body);
+
+        // Send email
         fetch('/emails', {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify({
                 recipients: recipients,
                 subject: subject,
                 body: body
             })
         })
-            .then(response => response.json())
-            .then(result => {
-                console.log('This loads after response is converted to json')
-                console.log(result)
-            });
-        load_mailbox('inbox');
-        // return false;
+            .then(response => {
+                if (response.status === 201) {
+                    alert('Mail was sent successfully');
+                    response.json().then(data => {
+                        console.log(data.message);
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                ${data.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`;
+                    })
+                } else if (response.status === 400) {
+                    alert('Mail was FAILED to sent');
+                    response.json().then(data => {
+                        console.log(data.error);
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                ${data.error}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>`;
+                    })
+                }
+            })
+            .then(() => {
+                load_mailbox('sent');
+            })
+        ;
+        console.log('This will run BEFORE the fetch')
     }
+    console.log('Final: The end of sendEmail function')
 }
 
 // When a user click on the email preview
 const showEmail = (email_id, inSent) => {
     console.log('You click this email');
-    console.log(email_id);
     // Get the data for this email
     let url = `/emails/${email_id}`;
     fetch(url)
         .then((response) => {
+                console.log('Single mail was opened successfully')
                 if (response.status !== 200) {
                     console.log('Status code: ' + response.status);
                     return;
                 }
                 // Success
                 response.json().then((emailObj) => {
+
                     console.log(emailObj);
                     // Render the full email
                     renderEmailView(emailObj, inSent);
@@ -269,12 +296,12 @@ const reply = (email) => {
     showComposeView()
 
     // Pre-fill recipient, subject and body
-    if (email.subject.substring(0,3).toLowerCase() !== 're:') {
+    if (email.subject.substring(0, 3).toLowerCase() !== 're:') {
         // Add Re: to subject
         email.subject = 'Re: ' + email.subject;
     }
 
-    email.body = `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body + '\n-----------------------\n';
+    email.body = '\n-----------------------\n' + `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body;
 
     document.querySelector('#compose-recipients').value = email.sender;
     document.querySelector('#compose-subject').value = email.subject;
@@ -282,7 +309,7 @@ const reply = (email) => {
 
     console.log('This loads when you click on REPLY button');
 
-    // sendEmail();
+    sendEmail();
 }
 
 // Show compose view and hide other views

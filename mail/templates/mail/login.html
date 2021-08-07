@@ -6,7 +6,7 @@
         <h2>Login</h2>
 
         {% if message %}
-            <div>{{ message }}</div>
+            <div style="color:#FF4848">{{ message }}</div>
         {% endif %}
 
         <form action="{% url 'login' %}" method="post">

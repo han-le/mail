@@ -13,6 +13,7 @@
         <a class="" href="{% url 'logout' %}">Log Out</a>
         <hr>
 
+        <div id="message"></div>
         <div id="emails-view"></div>
 
         <div id="compose-view">
@@ -22,12 +23,14 @@
                     From: <input disabled class="form-control" value="{{ request.user.email }}">
                 </div>
                 <div class="form-group">
-                    To: <input id="compose-recipients" class="form-control">
+                    To: <input id="compose-recipients" class="form-control"
+                               placeholder="apple@fruits.com, banana@fruits.com">
                 </div>
                 <div class="form-group">
                     <input class="form-control" id="compose-subject" placeholder="Subject">
                 </div>
-                <textarea autofocus class="form-control" id="compose-body" placeholder="Body" style="height:400px" ></textarea>
+                <textarea autofocus class="form-control" id="compose-body" placeholder="Body"
+                          style="height:400px"></textarea>
                 <input type="submit" class="btn btn-primary"/>
             </form>
         </div>
