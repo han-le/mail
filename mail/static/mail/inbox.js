@@ -130,8 +130,8 @@ const showEmails = (mailbox, email_list) => {
 const sendEmail = () => {
     console.log('1. This loads when sendEmail is called')
     const composeForm = document.getElementById('compose-form');
-    composeForm.onsubmit = function (event) {
-        event.preventDefault();
+    composeForm.onsubmit = function () {
+
         console.log('2. This loads when compose form is submitted ');
         let messageDiv = document.getElementById('message');
         messageDiv.innerHTML = ''; // Clear the message
@@ -141,10 +141,16 @@ const sendEmail = () => {
         let recipients = document.getElementById('compose-recipients').value;
         let subject = document.getElementById('compose-subject').value;
         let body = document.getElementById('compose-body').value;
-        // console.log('3. Email content:')
-        // console.log(recipients);
-        // console.log(subject);
-        // console.log(body);
+
+        // Check if subject or body is empty:
+        // if (subject === '' || body === '') {
+        //     let sendConfirmation = confirm('Your mail has empty subject and/or body. Still want to send?');
+        //     if (sendConfirmation) {
+        //         // Send the email
+        //     } else {
+        //         // Stay on the compose page
+        //     }
+        // }
 
         // Send email
         fetch('/emails', {
@@ -157,7 +163,7 @@ const sendEmail = () => {
         })
             .then(response => {
                 if (response.status === 201) {
-                    alert('Mail was sent successfully');
+                    // Mail was sent successfully -> Load Sent box
                     response.json().then(data => {
                         console.log(data.message);
                         messageDiv.innerHTML = `
@@ -166,8 +172,12 @@ const sendEmail = () => {
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>`;
                     })
+                        .then(() => {
+                            load_mailbox('sent');
+                            fadeOut(messageDiv);
+                        })
                 } else if (response.status === 400) {
-                    alert('Mail was FAILED to sent');
+                    // Mail was FAILED to sent -> Stay on compose page
                     response.json().then(data => {
                         console.log(data.error);
                         messageDiv.innerHTML = `
@@ -176,16 +186,25 @@ const sendEmail = () => {
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>`;
                     })
+                        .then(() => {
+                            let emailContent = {
+                                'recipients': recipients,
+                                'subject': subject,
+                                'body': body
+                            }
+                            reComposeEmail(emailContent);
+                            fadeOut(messageDiv);
+                        })
+                    return false;
                 }
             })
-            .then(() => {
-                load_mailbox('sent');
-                fadeOut(messageDiv);
-            })
+        // .then(() => {
+        //     load_mailbox('sent');
+        //     fadeOut(messageDiv);
+        // })
         ;
-        console.log('This will run BEFORE the fetch')
+        return false;
     }
-    console.log('Final: The end of sendEmail function')
 }
 
 // When a user click on the email preview
@@ -329,4 +348,15 @@ const fadeOut = (div) => {
     window.setTimeout(() => {
         div.style.opacity = '0';
     }, 3000)
+}
+
+const reComposeEmail = (email) => {
+    // Prefill with old data
+    document.querySelector('#compose-recipients').value = email.recipients;
+    document.querySelector('#compose-subject').value = email.subject;
+    document.querySelector('#compose-body').value = email.body;
+
+    console.log('This loads when email has error');
+
+    sendEmail();
 }
