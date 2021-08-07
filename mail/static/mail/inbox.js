@@ -208,12 +208,18 @@ const renderEmailView = (email, inSent) => {
                 <div>${email.timestamp}</div>
                 <div>${email.body}</div>
                 <button id="archiveButton">Archive</button>
+                <button id="replyButton">Reply</button>
             </div>`;
 
         // Add archive event to btn:
         document.getElementById('archiveButton').addEventListener('click', (event) => {
             archiveEmail(email.id, email.archived, event)
         });
+
+        // Add reply event to btn:
+        document.getElementById('replyButton').addEventListener('click', () => {
+            reply(email)
+        })
     }
 
     // Change the display status
@@ -258,6 +264,33 @@ const archiveEmail = (email_id, archived_status, event) => {
         })
 }
 
+const reply = (email) => {
+
+    showComposeView()
+
+    // Pre-fill recipient, subject and body
+    if (email.subject.substring(0,3).toLowerCase() !== 're:') {
+        // Add Re: to subject
+        email.subject = 'Re: ' + email.subject;
+    }
+
+    email.body = `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body + '\n-----------------------\n';
+
+    document.querySelector('#compose-recipients').value = email.sender;
+    document.querySelector('#compose-subject').value = email.subject;
+    document.querySelector('#compose-body').value = email.body;
+
+    console.log('This loads when you click on REPLY button');
+
+    // sendEmail();
+}
+
+// Show compose view and hide other views
+const showComposeView = () => {
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'block';
+    document.querySelector('#email-content-view').style.display = 'none';
+}
 const test = (emailID, status) => {
     console.log(emailID, status)
 }
