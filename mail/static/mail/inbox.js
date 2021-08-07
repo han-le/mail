@@ -134,7 +134,8 @@ const sendEmail = () => {
         event.preventDefault();
         console.log('2. This loads when compose form is submitted ');
         let messageDiv = document.getElementById('message');
-        // messageDiv.innerHTML = result.message;
+        messageDiv.innerHTML = ''; // Clear the message
+        messageDiv.style.opacity = '1';
 
         // Get the data input from user:
         let recipients = document.getElementById('compose-recipients').value;
@@ -179,6 +180,7 @@ const sendEmail = () => {
             })
             .then(() => {
                 load_mailbox('sent');
+                fadeOut(messageDiv);
             })
         ;
         console.log('This will run BEFORE the fetch')
@@ -320,4 +322,11 @@ const showComposeView = () => {
 }
 const test = (emailID, status) => {
     console.log(emailID, status)
+}
+
+// Remove the message after 1.5s
+const fadeOut = (div) => {
+    window.setTimeout(() => {
+        div.style.opacity = '0';
+    }, 3000)
 }
