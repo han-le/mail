@@ -244,7 +244,6 @@ const sendEmail = () => {
     }
 }
 
-
 const renderEmailView = (email, mailbox) => {
 
     let archivedBtnContent = 'Archive';
@@ -255,6 +254,9 @@ const renderEmailView = (email, mailbox) => {
     if (email.subject.length < 1) {
         email.subject = '(no subject)';
     }
+    let formattedBody = email.body;
+    formattedBody = formattedBody.replaceAll('\n', '<br>')
+
     let avatar = randomAvatar();
 
     let emailView = document.querySelector('#email-content-view');
@@ -290,7 +292,7 @@ const renderEmailView = (email, mailbox) => {
             </div>
             <div class="mail-content mt-3">
                 <div class="mail-body gray-text">
-                    ${email.body}    
+                    ${formattedBody}
                 </div>
                 <div class="mail-footer mt-5">
                     <!-- Button trigger modal -->
