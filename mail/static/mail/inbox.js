@@ -97,7 +97,7 @@ const showEmails = (mailbox, email_list) => {
         `;
             // Add event show Email to email div
             emailListContainer.addEventListener('click', () => {
-                showEmail(`${email.id}`, inSent = 'false')
+                showEmail(`${email.id}`, mailbox)
             });
 
             emailListWrapper.append(emailListContainer);
@@ -130,7 +130,7 @@ const showEmails = (mailbox, email_list) => {
         `;
             // Add event show Email to email div
             emailListContainer.addEventListener('click', () => {
-                showEmail(`${email.id}`, inSent = 'false')
+                showEmail(`${email.id}`, mailbox)
             });
 
             // Add the new content
@@ -146,7 +146,7 @@ const showEmails = (mailbox, email_list) => {
 
 
 // When a user click on the email preview
-const showEmail = (email_id, inSent) => {
+const showEmail = (email_id, mailbox) => {
     console.log('You click this email');
     // Get the data for this email
     let url = `/emails/${email_id}`;
@@ -162,7 +162,7 @@ const showEmail = (email_id, inSent) => {
 
                     console.log(emailObj);
                     // Render the full email
-                    renderEmailView(emailObj, inSent);
+                    renderEmailView(emailObj, mailbox);
                     // Mark the email as read/seen
                     if (emailObj.read === false) {
                         markAsRead(emailObj);
@@ -252,7 +252,7 @@ const sendEmail = () => {
 }
 
 
-const renderEmailView = (email, inSent) => {
+const renderEmailView = (email, mailbox) => {
     let emailView = document.querySelector('#email-content-view');
     emailView.innerHTML = `
         <div>
@@ -299,7 +299,7 @@ const renderEmailView = (email, inSent) => {
                 </div>
             </div>
         </div>`;
-    if (inSent === true) {
+    if (mailbox === 'sent') {
         // Remove archive btn in sent box
         document.getElementById('archive-container').innerHTML = '';
     } else {
