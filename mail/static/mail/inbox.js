@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
     document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-    // Replaced by modal
     document.querySelector('#compose').addEventListener('click', compose_email);
 
     // By default, load the inbox
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ------*****------- Write logic of the functions here ------*****-------
 
-// Replaced by modal
+// Using Modal
 function compose_email() {
     clearAll();
     sendEmail();
@@ -67,79 +66,62 @@ function load_mailbox(mailbox) {
 const showEmails = (mailbox, email_list) => {
 
     let emailListWrapper = document.createElement('div')
-    if (mailbox === 'sent') {
-        // Add archive btn
-        email_list.forEach((email) => {
-            // Body preview
-            if (email.body.length > 100) {
-                email.body = email.body.substring(0, 100) + '...';
-            }
+    let sendTo = mailbox === 'sent' ? 'Sent to: ' : '';
+    let avatar = '';
+    let emailBody = '';
+    let address = '';
+    let isRead = '';
+    let unreadMark = '';
 
-            let emailListContainer = document.createElement('div');
-            emailListContainer.innerHTML = `
-                <div class="mail-wrapper list-group-item list-group-item-action py-3 d-flex justify-content-between">
-                    <div class="preview-wrap d-flex">
-                        <img class="avatar" src='https://image.flaticon.com/icons/png/512/3940/3940403.png' alt="avatar"/>
-                        <div class="mail-preview ms-3">
-                            <div class="mb-1">To: <strong class="black-text">${email.recipients}</strong></div>
-                            <div style="color: #8c9ab0;">
-                                <span class="mail-subject">${email.subject}</span>
-                                <span class="mail-content ms-2">- ${email.body}</span>
+    email_list.forEach((email) => {
+
+        // Email preview
+        avatar = mailbox === 'sent' ? 'https://image.flaticon.com/icons/png/512/3940/3940403.png' : randomAvatar();
+        address = mailbox === 'sent' ? email.recipients : email.sender;
+        emailBody = email.body;
+        if (email.body.length > 70) {
+            emailBody = emailBody.substring(0, 100) + '...';
+        }
+
+        // Add signs for unread mails
+        isRead = email.read === true ? '' : 'unread';
+        unreadMark = email.read === true ? '' : '<i class="fas fa-circle"></i>';
+
+        // Render email
+        let emailListContainer = document.createElement('div');
+        emailListContainer.innerHTML = `
+                <div class="${isRead} mail-wrapper list-group-item list-group-item-action py-3">
+                    <div class="row">
+                        <div class="preview-wrap d-flex col-10">
+                            <img class="avatar" src=${avatar} alt="avatar"/>
+                            <div class="mail-preview ms-3">
+                                <div class="mb-1">${sendTo}<strong class="black-text">${address}</strong></div>
+                                <div style="color: #8c9ab0;">
+                                    <span class="mail-subject">${email.subject}</span>
+                                    <span class="mail-content ms-2">- ${emailBody}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="timestamp">${email.timestamp}</div>
-                </div>
-        `;
-            // Add event show Email to email div
-            emailListContainer.addEventListener('click', () => {
-                showEmail(`${email.id}`, mailbox)
-            });
-
-            emailListWrapper.append(emailListContainer);
-        });
-    } else {
-
-
-        email_list.forEach((email) => {
-            let avatar = randomAvatar();
-            // Body preview
-            if (email.body.length > 100) {
-                email.body = email.body.substring(0, 100) + '...';
-            }
-
-            let emailListContainer = document.createElement('div');
-            emailListContainer.innerHTML = `
-                <div class="mail-wrapper list-group-item list-group-item-action py-3 d-flex justify-content-between">
-                    <div class="preview-wrap d-flex">
-                        <img class="avatar" src=${avatar} alt="avatar"/>
-                        <div class="mail-preview ms-3">
-                            <strong class="mb-1 black-text">${email.sender}</strong>
-                            <div style="color: #8c9ab0;">
-                                <span class="mail-subject">${email.subject}</span>
-                                <span class="mail-content ms-2">- ${email.body}</span>
-                            </div>
+                        <div class="col-2 text-end">
+                            <div class="timestamp">${email.timestamp}</div>
+                            <div class="unread-mark">${unreadMark}</div>
                         </div>
-                    </div>
-                    <div class="timestamp">${email.timestamp}</div>
+                    </div>                    
                 </div>
         `;
-            // Add event show Email to email div
-            emailListContainer.addEventListener('click', () => {
-                showEmail(`${email.id}`, mailbox)
-            });
-
-            // Add the new content
-            emailListWrapper.append(emailListContainer);
+        // Add event show Email to email div
+        emailListContainer.addEventListener('click', () => {
+            showEmail(`${email.id}`, mailbox)
         });
-    }
+
+        emailListWrapper.append(emailListContainer);
+    });
+
 
     // Clear email view and override content
-    // document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
     document.querySelector('#emails-view').innerHTML = '';
     document.querySelector('#emails-view').append(emailListWrapper);
 }
-
 
 // When a user click on the email preview
 const showEmail = (email_id, mailbox) => {
@@ -153,9 +135,8 @@ const showEmail = (email_id, mailbox) => {
                     console.log('Status code: ' + response.status);
                     return;
                 }
-                // Success
+                // Success: get the email object
                 response.json().then((emailObj) => {
-
                     console.log(emailObj);
                     // Render the full email
                     renderEmailView(emailObj, mailbox);
@@ -172,13 +153,10 @@ const showEmail = (email_id, mailbox) => {
 }
 
 const sendEmail = () => {
-    console.log('1. This loads when sendEmail is called')
     const composeForm = document.getElementById('compose-form');
-    console.log(composeForm)
 
     composeForm.onsubmit = function () {
 
-        console.log('2. This loads when compose form is submitted ');
         let messageDiv = document.getElementById('message');
         messageDiv.innerHTML = ''; // Clear the message
         messageDiv.style.display = 'block';
@@ -187,16 +165,6 @@ const sendEmail = () => {
         let recipients = document.getElementById('compose-recipients').value;
         let subject = document.getElementById('compose-subject').value;
         let body = document.getElementById('compose-body').value;
-
-        // Check if subject or body is empty:
-        // if (subject === '' || body === '') {
-        //     let sendConfirmation = confirm('Your mail has empty subject and/or body. Still want to send?');
-        //     if (sendConfirmation) {
-        //         // Send the email
-        //     } else {
-        //         // Stay on the compose page
-        //     }
-        // }
 
         // Send email
         fetch('/emails', {
@@ -235,13 +203,6 @@ const sendEmail = () => {
                         .then(() => {
                             load_mailbox('sent');
                             fadeOut(messageDiv);
-                            // let emailContent = {
-                            //     'recipients': recipients,
-                            //     'subject': subject,
-                            //     'body': body
-                            // }
-                            // reComposeEmail(emailContent);
-                            // fadeOut(messageDiv);
                         })
                     return false;
                 }
@@ -326,15 +287,17 @@ const renderEmailView = (email, mailbox) => {
 }
 
 const markAsRead = (email) => {
+
     let url = `emails/${email.id}`;
 
     fetch(url, {
+        method: 'PUT',
         body: JSON.stringify({
             read: true
         }),
     })
-        .then(data => {
-            console.log('Success: Marked as read', data);
+        .then(() => {
+            console.log('Success: Marked as read');
         })
         .catch((error) => {
             console.log('Error:', error);
@@ -389,16 +352,14 @@ const showThisView = (divToShow) => {
             document.getElementById(div).style.display = 'none';
         }
     })
-    // document.querySelector('#emails-view').style.display = 'none';
-    // document.querySelector('#compose-view').style.display = 'block';
-    // document.querySelector('#email-content-view').style.display = 'none';
 }
+
 const test = () => {
     console.log('test function works');
     load_mailbox('sent');
 }
 
-// Remove the message after 1.5s
+// Remove the message after awhile
 const fadeOut = (div) => {
     window.setTimeout(() => {
         div.style.display = 'none';
@@ -413,7 +374,7 @@ const clearAll = () => {
     document.querySelector('#compose-body').value = '';
 }
 
-
+// Generate a random avatar
 const randomAvatar = () => {
     const avatars = [
         'https://image.flaticon.com/icons/png/512/3940/3940407.png',

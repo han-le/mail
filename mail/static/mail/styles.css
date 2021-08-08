@@ -66,8 +66,14 @@
     overflow-y: scroll;
 }
 
-.active-mail {
+.unread {
     background-color: #f4f6f8 !important;
+}
+
+.unread-mark {
+    color: #00e2ac;
+    font-size: 11px;
+    margin-top: 5px;
 }
 
 .avatar {
@@ -178,6 +184,7 @@
     margin: 15px 0;
 }
 
+
 .middle ul li button {
     border: none;
     background: transparent;
@@ -187,6 +194,14 @@
 .middle ul li a {
     text-decoration: none;
 }
+
+.middle ul li button:hover {
+    color: #00a48a;
+}
+
+/*.middle ul li a:hover {*/
+/*    color: #00a48a;*/
+/*}*/
 
 .middle .choose-view {
     font-weight: bold;
