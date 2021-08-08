@@ -6,11 +6,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
     document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-    document.querySelector('#compose').addEventListener('click', compose_email);
+    // document.querySelector('#compose').addEventListener('click', compose_email);
 
     // By default, load the inbox
     load_mailbox('inbox');
-
 });
 
 
@@ -60,71 +59,120 @@ function load_mailbox(mailbox) {
             }
         )
         .catch(function (err) {
-            console.log('Fetch Error :-S', err);
+            console.log('Fetch Error', err);
         });
 
     // Show the mailbox and hide other views
-    document.querySelector('#emails-view').style.display = 'block';
-    document.querySelector('#compose-view').style.display = 'none';
-    document.querySelector('#email-content-view').style.display = 'none';
+    showThisView('emails-view');
 }
 
 const showEmails = (mailbox, email_list) => {
 
-    let emailWrapper = document.createElement('div')
+    let emailListWrapper = document.createElement('div')
     if (mailbox === 'sent') {
-        // Do not add archive btn
+        // Add archive btn
         email_list.forEach((email) => {
-            let emailContainer = document.createElement('div');
-            emailContainer.innerHTML = `
-            <div class="" style="background: lightyellow">
-                <h5>Email id: ${email.id}</h5>
-                <li>Read status: ${email.read}</li>
-                <li>Archived status: ${email.archived}</li>
-                <li>From: ${email.sender}</li>
-                <li>To: ${email.recipients}</li>
-                <li>Subject: ${email.subject}</li>
-                <li>${email.timestamp}</li>                
-            </div>
-            <hr>
+            // Body preview
+            if (email.body.length > 100) {
+                email.body = email.body.substring(0, 100) + '...';
+            }
+
+            let emailListContainer = document.createElement('div');
+            emailListContainer.innerHTML = `
+                <div class="mail-wrapper list-group-item list-group-item-action py-3 d-flex justify-content-between">
+                    <div class="preview-wrap d-flex">
+                        <img class="avatar" src='https://image.flaticon.com/icons/png/512/3940/3940403.png' alt="avatar"/>
+                        <div class="mail-preview ms-3">
+                            To: <strong class="mb-1 black-text">${email.recipients}</strong>
+                            <div style="color: #8c9ab0;">
+                                <span class="mail-subject">${email.subject}</span>
+                                <span class="mail-content ms-2">- ${email.body}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timestamp">
+                        <div>${email.timestamp}</div>
+                    </div>
+                </div>
         `;
             // Add event show Email to email div
-            emailContainer.addEventListener('click', () => {
-                showEmail(`${email.id}`, inSent = 'true')
+            emailListContainer.addEventListener('click', () => {
+                showEmail(`${email.id}`, inSent = 'false')
             });
 
-            // Add event archive to archive btn
-            emailWrapper.append(emailContainer);
+            emailListWrapper.append(emailListContainer);
         });
     } else {
         // Add archive btn
         email_list.forEach((email) => {
-            let emailContainer = document.createElement('div');
-            emailContainer.innerHTML = `
-            <div class="" style="background: lightyellow">
-                <h5>Email id: ${email.id}</h5>
-                <li><strong>Read status: ${email.read}</strong></li>
-                <li><strong>Archived status: ${email.archived}</strong></li>
-                <li>From: ${email.sender}</li>
-                <li>To: ${email.recipients}</li>
-                <li>Subject: ${email.subject}</li>
-                <li>${email.timestamp}</li>                
-            </div>
-            <button onclick="archiveEmail(${email.id}, ${email.archived}, event)">Archive</button>
-            <hr>
+            // Body preview
+            if (email.body.length > 100) {
+                email.body = email.body.substring(0, 100) + '...';
+            }
+
+            let emailListContainer = document.createElement('div');
+            emailListContainer.innerHTML = `
+                <div class="mail-wrapper list-group-item list-group-item-action py-3 d-flex justify-content-between">
+                    <div class="preview-wrap d-flex">
+                        <img class="avatar" src='https://image.flaticon.com/icons/png/512/3940/3940401.png' alt="avatar"/>
+                        <div class="mail-preview ms-3">
+                            <strong class="mb-1 black-text">${email.sender}</strong>
+                            <div style="color: #8c9ab0;">
+                                <span class="mail-subject">${email.subject}</span>
+                                <span class="mail-content ms-2">- ${email.body}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timestamp">
+                        <div>${email.timestamp}</div>
+                    </div>
+                </div>
         `;
             // Add event show Email to email div
-            emailContainer.addEventListener('click', () => {
+            emailListContainer.addEventListener('click', () => {
                 showEmail(`${email.id}`, inSent = 'false')
             });
 
-            // Add event archive to archive btn
-            emailWrapper.append(emailContainer);
+            // Add the new content
+            emailListWrapper.append(emailListContainer);
         });
     }
 
-    document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-    document.querySelector('#emails-view').append(emailWrapper);
+    // Clear email view and override content
+    // document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+    document.querySelector('#emails-view').innerHTML = '';
+    document.querySelector('#emails-view').append(emailListWrapper);
+}
+
+
+// When a user click on the email preview
+const showEmail = (email_id, inSent) => {
+    console.log('You click this email');
+    // Get the data for this email
+    let url = `/emails/${email_id}`;
+    fetch(url)
+        .then((response) => {
+                console.log('Single mail was opened successfully')
+                if (response.status !== 200) {
+                    console.log('Status code: ' + response.status);
+                    return;
+                }
+                // Success
+                response.json().then((emailObj) => {
+
+                    console.log(emailObj);
+                    // Render the full email
+                    renderEmailView(emailObj, inSent);
+                    // Mark the email as read/seen
+                    if (emailObj.read === false) {
+                        markAsRead(emailObj);
+                    }
+                });
+            }
+        ).catch((err) => {
+        console.log('Fetch Error :-S', err);
+    });
+    showThisView('email-content-view')
 }
 
 const sendEmail = () => {
@@ -203,71 +251,68 @@ const sendEmail = () => {
     }
 }
 
-// When a user click on the email preview
-const showEmail = (email_id, inSent) => {
-    console.log('You click this email');
-    // Get the data for this email
-    let url = `/emails/${email_id}`;
-    fetch(url)
-        .then((response) => {
-                console.log('Single mail was opened successfully')
-                if (response.status !== 200) {
-                    console.log('Status code: ' + response.status);
-                    return;
-                }
-                // Success
-                response.json().then((emailObj) => {
-
-                    console.log(emailObj);
-                    // Render the full email
-                    renderEmailView(emailObj, inSent);
-                    // Mark the email as read/seen
-                    if (emailObj.read === false) {
-                        markAsRead(emailObj);
-                    }
-                });
-            }
-        ).catch((err) => {
-        console.log('Fetch Error :-S', err);
-    });
-}
 
 const renderEmailView = (email, inSent) => {
     let emailView = document.querySelector('#email-content-view');
+    emailView.innerHTML = `
+        <div>
+            <div class="subject d-flex justify-content-between">
+                <h4 class="mb-4">${email.subject}</h4>
+                <div id="archive-container">
+                    <button type="button" class="btn btn-outline-secondary" style="font-size: 13px">
+                        <i class="fas fa-archive me-2"></i>Archive
+                    </button>
+                </div>
+            </div>
+            <div class="sender-info mt-4">
+                <div class="d-flex justify-content-between">
+                    <div class="sender-info-left d-flex">
+                        <div>
+                            <img class="avatar"
+                                 src='https://image.flaticon.com/icons/png/512/3940/3940401.png'
+                                 alt="avatar"/>
+                        </div>
+                        <div class="info">
+                            <div>
+                                <strong>${email.sender}</strong>
+                            </div>
+                            <div>To: <span class="light-gray-text">${email.recipients}</span></div>
+                        </div>
+                    </div>
+                    <div class="sender-info-right">
+                        <div class="mail-date light-gray-text">
+                            ${email.timestamp}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mail-content mt-3">
+                <div class="mail-body gray-text">
+                    ${email.body}    
+                </div>
+                <div class="mail-footer mt-5">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn theme-color text-white" data-bs-toggle="modal"
+                            data-bs-target="#mailModal" id="replyButton">Reply
+                        <i class="ms-1 fas fa-reply"></i>
+                    </button>
+                </div>
+            </div>
+        </div>`;
     if (inSent === true) {
-        emailView.innerHTML = `<div class="">
-                <div>email id: ${email.id}</div>
-                <div>From: ${email.sender}</div>
-                <div>To: ${email.recipients}</div>
-                <div>Subject: ${email.subject}</div>
-                <div>${email.timestamp}</div>
-                <div>${email.body}</div>
-            </div>`;
+        // Remove archive btn in sent box
+        document.getElementById('archive-container').innerHTML = '';
     } else {
-        emailView.innerHTML = `<div class="">
-                <div>email id: ${email.id}</div>
-                <div>From: ${email.sender}</div>
-                <div>To: ${email.recipients}</div>
-                <div>Subject: ${email.subject}</div>
-                <div>${email.timestamp}</div>
-                <div>${email.body}</div>
-                <button id="archiveButton">Archive</button>
-                <button id="replyButton">Reply</button>
-            </div>`;
-
         // Add archive event to btn:
         document.getElementById('archiveButton').addEventListener('click', (event) => {
             archiveEmail(email.id, email.archived, event)
         });
-
-        // Add reply event to btn:
-        document.getElementById('replyButton').addEventListener('click', () => {
-            reply(email)
-        })
     }
 
-    // Change the display status
-    emailView.style.display = 'block';
+    // Add reply event to btn:
+    document.getElementById('replyButton').addEventListener('click', () => {
+            reply(email)
+        })
 }
 
 const markAsRead = (email) => {
@@ -310,7 +355,7 @@ const archiveEmail = (email_id, archived_status, event) => {
 
 const reply = (email) => {
 
-    showComposeView()
+    // showComposeView()
 
     // Pre-fill recipient, subject and body
     if (email.subject.substring(0, 3).toLowerCase() !== 're:') {
@@ -330,10 +375,18 @@ const reply = (email) => {
 }
 
 // Show compose view and hide other views
-const showComposeView = () => {
-    document.querySelector('#emails-view').style.display = 'none';
-    document.querySelector('#compose-view').style.display = 'block';
-    document.querySelector('#email-content-view').style.display = 'none';
+const showThisView = (divToShow) => {
+    const views = ['emails-view', 'email-content-view'];
+    views.forEach((div) => {
+        if (div === divToShow) {
+            document.getElementById(div).style.display = 'block';
+        } else {
+            document.getElementById(div).style.display = 'none';
+        }
+    })
+    // document.querySelector('#emails-view').style.display = 'none';
+    // document.querySelector('#compose-view').style.display = 'block';
+    // document.querySelector('#email-content-view').style.display = 'none';
 }
 const test = (emailID, status) => {
     console.log(emailID, status)
