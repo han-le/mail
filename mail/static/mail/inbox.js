@@ -53,7 +53,13 @@ function load_mailbox(mailbox) {
         });
 
     // Show the name of mailbox
-    document.getElementById('view-name').innerHTML = `<div><h5>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h5></div>`;
+    document.getElementById('view-name').innerHTML =
+        `<div class="d-flex">
+            <button type="button" class="btn btn-light" onclick="load_mailbox('${mailbox}')">
+                <i class="fas fa-chevron-left"></i>
+            </button>            
+            <h5>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h5>
+        </div>`;
     // Show the mailbox and hide other views
     showThisView('emails-view');
 }

@@ -216,9 +216,8 @@
 }
 
 .right .column-header h5 {
-    background-color: #CAF2D7;
-    padding: 10px 25px;
-    border-radius: 25px
+    padding-top: 10px;
+    padding-left: 10px;
 }
 
 .right .column-header i {
