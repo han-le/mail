@@ -19,16 +19,16 @@
 
                         <!-- Compose view -->
                         <div class="modal fade" id="mailModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             data-bs-backdrop="static"
                              aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">New Email</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                        <h5 class="modal-title" id="exampleModalLabel"><i
+                                                class="fas fa-envelope me-2"></i>Compose email</h5>
                                     </div>
                                     <div class="modal-body">
-                                        <form>
+                                        <form id="compose-form">
                                             <div class="mb-3">
                                                 <label for="compose-recipients"
                                                        class="col-form-label">Recipient (Use comma to separate multiple
@@ -43,14 +43,18 @@
                                             <div class="mb-3">
                                                 <label for="compose-body" class="col-form-label">Message:</label>
                                                 <textarea class="form-control" id="compose-body"
-                                                          style="height: 400px;"></textarea>
+                                                          style="height: 350px;"></textarea>
                                             </div>
+                                            <div class="mt-2 text-end">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                                        onclick="clearAll()">Discard
+                                                </button>
+                                                <input type="submit" class="btn btn-primary" data-bs-dismiss="modal"
+                                                       value="Send"/>
+
+                                            </div>
+
                                         </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard
-                                        </button>
-                                        <button type="button" class="btn btn-primary">Send</button>
                                     </div>
                                 </div>
                             </div>
@@ -85,15 +89,15 @@
             </div>
             <div class="right col-10">
                 <div class="right-wrapper">
-                    <div class="column-header d-flex justify-content-between">
-                        <div class="view-name"><h5>Inbox</h5></div>
-                        <div>
+                    <div class="column-header row">
+                        <div id="view-name" class="col-4"><h5>Inbox</h5></div>
+                        <div class="col-4">
                             <form class="search-form d-flex">
                                 <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
                                 <i class="fas fa-search"></i>
                             </form>
                         </div>
-                        <div class="d-flex account">
+                        <div class="d-flex account col-4 justify-content-end">
                             <div class="gray-text me-2">{{ request.user.email }}</div>
                             <img style="width: 25px;" src='https://image.flaticon.com/icons/png/512/3940/3940403.png'/>
                         </div>
@@ -101,7 +105,7 @@
                     <div class="content scrollable">
 
                         <!-- Message -->
-                        <div class="message"></div>
+                        <div id="message"></div>
 
                         <!-- List of emails -->
                         <div id="emails-view"></div>

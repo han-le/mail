@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
     document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
     document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-    // document.querySelector('#compose').addEventListener('click', compose_email);
+    // Replaced by modal
+    document.querySelector('#compose').addEventListener('click', compose_email);
 
     // By default, load the inbox
     load_mailbox('inbox');
@@ -15,20 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ------*****------- Write logic of the functions here ------*****-------
 
+// Replaced by modal
 function compose_email() {
-
-    // Show compose view and hide other views
-    document.querySelector('#emails-view').style.display = 'none';
-    document.querySelector('#compose-view').style.display = 'block';
-    document.querySelector('#email-content-view').style.display = 'none';
-
-    // Clear out composition fields
-    document.querySelector('#compose-recipients').value = '';
-    document.querySelector('#compose-subject').value = '';
-    document.querySelector('#compose-body').value = '';
-
-    console.log('This loads when you click on compose button');
-
+    clearAll();
     sendEmail();
 }
 
@@ -49,12 +39,12 @@ function load_mailbox(mailbox) {
                     // When the data is NOT empty
                     if (data.length > 0) {
                         showEmails(mailbox, data);
-                        console.log(data)
+                        console.log('Mails are loaded successfully')
                     } else {
                         // When the data is empty
-                        document.querySelector('#emails-view').innerHTML = `<h3>This is empty</h3>`
+                        document.querySelector('#emails-view').innerHTML = `<h3>Just an empty box</h3>`
                     }
-                    console.log(mailbox, 'are loaded')
+                    console.log('End of load', mailbox, 'function')
                 });
             }
         )
@@ -62,6 +52,8 @@ function load_mailbox(mailbox) {
             console.log('Fetch Error', err);
         });
 
+    // Show the name of mailbox
+    document.getElementById('view-name').innerHTML = `<div><h5>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h5></div>`;
     // Show the mailbox and hide other views
     showThisView('emails-view');
 }
@@ -83,16 +75,14 @@ const showEmails = (mailbox, email_list) => {
                     <div class="preview-wrap d-flex">
                         <img class="avatar" src='https://image.flaticon.com/icons/png/512/3940/3940403.png' alt="avatar"/>
                         <div class="mail-preview ms-3">
-                            To: <strong class="mb-1 black-text">${email.recipients}</strong>
+                            <div class="mb-1">To: <strong class="black-text">${email.recipients}</strong></div>
                             <div style="color: #8c9ab0;">
                                 <span class="mail-subject">${email.subject}</span>
                                 <span class="mail-content ms-2">- ${email.body}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="timestamp">
-                        <div>${email.timestamp}</div>
-                    </div>
+                    <div class="timestamp">${email.timestamp}</div>
                 </div>
         `;
             // Add event show Email to email div
@@ -103,8 +93,10 @@ const showEmails = (mailbox, email_list) => {
             emailListWrapper.append(emailListContainer);
         });
     } else {
-        // Add archive btn
+
+
         email_list.forEach((email) => {
+            let avatar = randomAvatar();
             // Body preview
             if (email.body.length > 100) {
                 email.body = email.body.substring(0, 100) + '...';
@@ -114,7 +106,7 @@ const showEmails = (mailbox, email_list) => {
             emailListContainer.innerHTML = `
                 <div class="mail-wrapper list-group-item list-group-item-action py-3 d-flex justify-content-between">
                     <div class="preview-wrap d-flex">
-                        <img class="avatar" src='https://image.flaticon.com/icons/png/512/3940/3940401.png' alt="avatar"/>
+                        <img class="avatar" src=${avatar} alt="avatar"/>
                         <div class="mail-preview ms-3">
                             <strong class="mb-1 black-text">${email.sender}</strong>
                             <div style="color: #8c9ab0;">
@@ -123,9 +115,7 @@ const showEmails = (mailbox, email_list) => {
                             </div>
                         </div>
                     </div>
-                    <div class="timestamp">
-                        <div>${email.timestamp}</div>
-                    </div>
+                    <div class="timestamp">${email.timestamp}</div>
                 </div>
         `;
             // Add event show Email to email div
@@ -178,12 +168,14 @@ const showEmail = (email_id, mailbox) => {
 const sendEmail = () => {
     console.log('1. This loads when sendEmail is called')
     const composeForm = document.getElementById('compose-form');
+    console.log(composeForm)
+
     composeForm.onsubmit = function () {
 
         console.log('2. This loads when compose form is submitted ');
         let messageDiv = document.getElementById('message');
         messageDiv.innerHTML = ''; // Clear the message
-        messageDiv.style.opacity = '1';
+        messageDiv.style.display = 'block';
 
         // Get the data input from user:
         let recipients = document.getElementById('compose-recipients').value;
@@ -230,37 +222,49 @@ const sendEmail = () => {
                         console.log(data.error);
                         messageDiv.innerHTML = `
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                ${data.error}
+                                Failed to send: ${data.error}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>`;
                     })
                         .then(() => {
-                            let emailContent = {
-                                'recipients': recipients,
-                                'subject': subject,
-                                'body': body
-                            }
-                            reComposeEmail(emailContent);
+                            load_mailbox('sent');
                             fadeOut(messageDiv);
+                            // let emailContent = {
+                            //     'recipients': recipients,
+                            //     'subject': subject,
+                            //     'body': body
+                            // }
+                            // reComposeEmail(emailContent);
+                            // fadeOut(messageDiv);
                         })
                     return false;
                 }
             })
-
         return false;
     }
 }
 
 
 const renderEmailView = (email, mailbox) => {
+
+    let archivedBtnContent = 'Archive';
+    if (email.archived === true) {
+        archivedBtnContent = 'Unarchive'
+    }
+
+    if (email.subject.length < 1) {
+        email.subject = '(no subject)';
+    }
+    let avatar = randomAvatar();
+
     let emailView = document.querySelector('#email-content-view');
     emailView.innerHTML = `
         <div>
             <div class="subject d-flex justify-content-between">
                 <h4 class="mb-4">${email.subject}</h4>
                 <div id="archive-container">
-                    <button type="button" class="btn btn-outline-secondary" style="font-size: 13px">
-                        <i class="fas fa-archive me-2"></i>Archive
+                    <button type="button" class="btn btn-outline-secondary" style="font-size: 13px" id="archiveButton">
+                        <i class="fas fa-archive me-2" ></i>${archivedBtnContent}
                     </button>
                 </div>
             </div>
@@ -268,9 +272,7 @@ const renderEmailView = (email, mailbox) => {
                 <div class="d-flex justify-content-between">
                     <div class="sender-info-left d-flex">
                         <div>
-                            <img class="avatar"
-                                 src='https://image.flaticon.com/icons/png/512/3940/3940401.png'
-                                 alt="avatar"/>
+                            <img class="avatar" src=${avatar} alt="avatar"/>
                         </div>
                         <div class="info">
                             <div>
@@ -280,7 +282,7 @@ const renderEmailView = (email, mailbox) => {
                         </div>
                     </div>
                     <div class="sender-info-right">
-                        <div class="mail-date light-gray-text">
+                        <div class="timestamp light-gray-text">
                             ${email.timestamp}
                         </div>
                     </div>
@@ -305,14 +307,14 @@ const renderEmailView = (email, mailbox) => {
     } else {
         // Add archive event to btn:
         document.getElementById('archiveButton').addEventListener('click', (event) => {
-            archiveEmail(email.id, email.archived, event)
+            archiveEmail(email)
         });
     }
 
     // Add reply event to btn:
     document.getElementById('replyButton').addEventListener('click', () => {
-            reply(email)
-        })
+        reply(email)
+    })
 }
 
 const markAsRead = (email) => {
@@ -331,15 +333,13 @@ const markAsRead = (email) => {
         });
 }
 
-const archiveEmail = (email_id, archived_status, event) => {
-    // Stop calling the event above it
-    event.stopPropagation();
-
-    let url = 'emails/' + email_id;
+const archiveEmail = (email) => {
+    console.log('Archive email was clicked, archived status:', email.archived);
+    let url = 'emails/' + email.id;
     fetch(url, {
         method: 'PUT',
         body: JSON.stringify({
-            archived: archived_status !== true
+            archived: email.archived !== true
         })
     })
         .then(response => {
@@ -354,23 +354,20 @@ const archiveEmail = (email_id, archived_status, event) => {
 }
 
 const reply = (email) => {
-
-    // showComposeView()
-
     // Pre-fill recipient, subject and body
+    let subject = email.subject;
+    // Add Re: to subject
     if (email.subject.substring(0, 3).toLowerCase() !== 're:') {
-        // Add Re: to subject
-        email.subject = 'Re: ' + email.subject;
+        subject = 'Re: ' + email.subject;
     }
 
-    email.body = '\n-----------------------\n' + `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body;
+    let originalMessage = '\n-----------------------\n' + `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body;
 
     document.querySelector('#compose-recipients').value = email.sender;
-    document.querySelector('#compose-subject').value = email.subject;
-    document.querySelector('#compose-body').value = email.body;
+    document.querySelector('#compose-subject').value = subject;
+    document.querySelector('#compose-body').value = originalMessage;
 
     console.log('This loads when you click on REPLY button');
-
     sendEmail();
 }
 
@@ -388,25 +385,37 @@ const showThisView = (divToShow) => {
     // document.querySelector('#compose-view').style.display = 'block';
     // document.querySelector('#email-content-view').style.display = 'none';
 }
-const test = (emailID, status) => {
-    console.log(emailID, status)
+const test = () => {
+    console.log('test function works');
+    load_mailbox('sent');
 }
 
 // Remove the message after 1.5s
 const fadeOut = (div) => {
     window.setTimeout(() => {
-        div.style.opacity = '0';
+        div.style.display = 'none';
     }, 4000)
 }
 
-const reComposeEmail = (email) => {
-    console.log('This loads when calling re compose email')
-    // Prefill with old data
-    document.querySelector('#compose-recipients').value = email.recipients;
-    document.querySelector('#compose-subject').value = email.subject;
-    document.querySelector('#compose-body').value = email.body;
+// Clear the form
+const clearAll = () => {
+    console.log('Form was cleared');
+    document.querySelector('#compose-recipients').value = '';
+    document.querySelector('#compose-subject').value = '';
+    document.querySelector('#compose-body').value = '';
+}
 
-    console.log('This loads when email has error');
 
-    sendEmail();
+const randomAvatar = () => {
+    const avatars = [
+        'https://image.flaticon.com/icons/png/512/3940/3940407.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940405.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940400.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940404.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940402.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940401.png',
+        'https://image.flaticon.com/icons/png/512/3940/3940408.png'
+    ]
+    const randomIndex = Math.floor(Math.random() * avatars.length);
+    return avatars[randomIndex];
 }

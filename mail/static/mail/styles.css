@@ -76,6 +76,12 @@
     border-radius: 100%;
 }
 
+.timestamp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 15px;
+    color: #a2aab4;
+}
+
 /* Height */
 .middle {
     height: 100vh;
@@ -116,8 +122,6 @@
 
 .search-form {
     padding: 5px 20px;
-    min-width: 400px;
-    max-width: 500px;
     margin-top: 15px;
     background-color: #f4f6f8;
     border-radius: 25px;
@@ -207,7 +211,7 @@
     border-bottom: 2px solid #edeff1;
 }
 
-.right .column-header .view-name {
+.right #view-name {
     margin-top: 15px;
 }
 
@@ -266,15 +270,11 @@
 }
 
 .right .mail-preview .mail-subject {
-    color: #5a6575;
+    color: #2f3853;
 }
 
 .right .mail-preview .mail-content {
     color: #8c9ab0;
-}
-
-.right .timestamp {
-    color: #5a6575;
 }
 
 /*  Scrollbar styling  */
