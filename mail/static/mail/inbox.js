@@ -198,11 +198,7 @@ const sendEmail = () => {
                     return false;
                 }
             })
-        // .then(() => {
-        //     load_mailbox('sent');
-        //     fadeOut(messageDiv);
-        // })
-        ;
+
         return false;
     }
 }
@@ -347,10 +343,11 @@ const test = (emailID, status) => {
 const fadeOut = (div) => {
     window.setTimeout(() => {
         div.style.opacity = '0';
-    }, 3000)
+    }, 4000)
 }
 
 const reComposeEmail = (email) => {
+    console.log('This loads when calling re compose email')
     // Prefill with old data
     document.querySelector('#compose-recipients').value = email.recipients;
     document.querySelector('#compose-subject').value = email.subject;

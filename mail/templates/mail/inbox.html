@@ -3,40 +3,119 @@
 
 {% block body %}
 
-    <div class="container">
-        <h2>{{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.email }}</h2>
+    <div class="container-fluid ps-5">
+        <div class="row" id="wrapper">
+            <div class="middle col-2">
+                <div class="middle-bg middle-wrap px-4">
+                    <div class="column-header">
+                        <div class="d-flex">
+                            <div class="logo-img-wrapper"><img
+                                    src="https://image.flaticon.com/icons/png/512/4616/4616046.png"
+                                    style="width: 25px;"></div>
+                            <div class="ms-3 black-text fw-bold fs-2">Mail</div>
+                        </div>
+                    </div>
+                    <div class="content py-4">
 
-        <button id="inbox">Inbox</button>
-        <button id="compose">Compose</button>
-        <button id="sent">Sent</button>
-        <button id="archived">Archived</button>
-        <a class="" href="{% url 'logout' %}">Log Out</a>
-        <hr>
+                        <!-- Compose view -->
+                        <div class="modal fade" id="mailModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">New Email</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="compose-recipients"
+                                                       class="col-form-label">Recipient (Use comma to separate multiple
+                                                    emails):</label>
+                                                <input type="text" class="form-control" id="compose-recipients">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="compose-subject"
+                                                       class="col-form-label">Subject:</label>
+                                                <input type="text" class="form-control" id="compose-subject">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="compose-body" class="col-form-label">Message:</label>
+                                                <textarea class="form-control" id="compose-body"
+                                                          style="height: 400px;"></textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Discard
+                                        </button>
+                                        <button type="button" class="btn btn-primary">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <div id="message"></div>
-        <div id="emails-view"></div>
+                        <!-- Navigate -->
+                        <button type="button" class="btn theme-color text-white px-4" data-bs-toggle="modal"
+                                data-bs-target="#mailModal" id="compose">
+                            <span class="fs-5 me-2">Compose</span>
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <ul class="mt-4">
+                            <li style="color: #37a389;">
+                                <button id="inbox" class="choose-view"><i class="fas fa-envelope me-3"></i>Inbox
+                                </button>
+                            </li>
+                            <li>
+                                <button id="sent" class="choose-view"><i class="fas fa-paper-plane me-3"></i>Sent
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                        id="archived" class="choose-view"><i class="fas fa-archive me-3"></i>Archived
+                                </button>
+                            </li>
+                            <li><a class="choose-view" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt me-3"></i>Log Out</a></li>
+                        </ul>
 
-        <div id="compose-view">
-            <h3>New Email</h3>
-            <form id="compose-form">
-                <div class="form-group">
-                    From: <input disabled class="form-control" value="{{ request.user.email }}">
+                    </div>
                 </div>
-                <div class="form-group">
-                    To: <input id="compose-recipients" class="form-control"
-                               placeholder="apple@fruits.com, banana@fruits.com">
+            </div>
+            <div class="right col-10">
+                <div class="right-wrapper">
+                    <div class="column-header d-flex justify-content-between">
+                        <div class="view-name"><h5>Inbox</h5></div>
+                        <div>
+                            <form class="search-form d-flex">
+                                <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                                <i class="fas fa-search"></i>
+                            </form>
+                        </div>
+                        <div class="d-flex account">
+                            <div class="gray-text me-2">{{ request.user.email }}</div>
+                            <img style="width: 25px;" src='https://image.flaticon.com/icons/png/512/3940/3940401.png'/>
+                        </div>
+                    </div>
+                    <div class="content scrollable">
+
+                        <!-- Message -->
+                        <div class="message"></div>
+
+                        <!-- List of emails -->
+                        <div id="emails-view-test"></div>
+
+                        <!-- Email content -->
+                        <div id="email-content-view"></div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input class="form-control" id="compose-subject" placeholder="Subject">
-                </div>
-                <textarea autofocus class="form-control" id="compose-body" placeholder="Body"
-                          style="height:400px"></textarea>
-                <input type="submit" class="btn btn-primary"/>
-            </form>
+
+            </div>
         </div>
-
-        <div id="email-content-view"></div>
     </div>
+
+
 {% endblock %}
 
 {% block script %}
