@@ -15,28 +15,16 @@
     padding: 0;
 }
 
-/* .left {
-  background-color: lightcoral;
-} */
-
-/* .middle {
-  background-color: lightgreen;
-} */
-
-/* .right {
-  background-color: rgb(196, 29, 160);
-} */
-
-.yellow {
-    background-color: #efe3d0;
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    opacity: 0.1;
 }
 
-.green {
-    background-color: #93d9a3;
-}
-
-.blue {
-    background-color: #a2dbfa;
+.centered-page {
+    height: 80vh;
+    display: flex;
+    align-items: center;
 }
 
 .middle-bg {
@@ -46,7 +34,8 @@
 /* Color theme */
 
 .theme-color {
-    background-color: #00a48a;
+    /*background-color: #00a48a;*/
+    background-color: #28B5B5
 }
 
 .light-gray-text {
@@ -199,6 +188,10 @@
     color: #00a48a;
 }
 
+.middle ul li a:hover {
+    color: #a40000;
+}
+
 /*.middle ul li a:hover {*/
 /*    color: #00a48a;*/
 /*}*/
@@ -310,4 +303,14 @@
 /* Handle on hover */
 .right ::-webkit-scrollbar-thumb:hover {
     background: #83dfd1;
+}
+
+.login-wrapper {
+    box-shadow: rgb(0 0 0 / 8%) 0 4px 12px;
+    border: 1px solid #b0b0b020;
+}
+
+.login-wrapper .input-wrapper {
+    margin-top: 40px;
+    margin-bottom:40px
 }

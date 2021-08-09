@@ -12,14 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
     load_mailbox('inbox');
 });
 
-
 // ------*****------- Write logic of the functions here ------*****-------
-
-// Using Modal
-function compose_email() {
-    clearAll();
-    sendEmail();
-}
 
 function load_mailbox(mailbox) {
 
@@ -152,6 +145,12 @@ const showEmail = (email_id, mailbox) => {
     showThisView('email-content-view')
 }
 
+// Using Modal
+function compose_email() {
+    clearAll();
+    sendEmail();
+}
+
 const sendEmail = () => {
     const composeForm = document.getElementById('compose-form');
 
@@ -209,6 +208,34 @@ const sendEmail = () => {
             })
         return false;
     }
+}
+
+const reply = (email) => {
+    console.log('Calling function REPLY')
+    // Pre-fill recipient, subject and body
+    let subject = email.subject;
+    // Add Re: to subject
+    if (email.subject.substring(0, 3).toLowerCase() !== 're:') {
+        subject = 'Re: ' + email.subject;
+    }
+    // Add old conversations
+    let originalMessage = '\n-----------------------\n' + `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body;
+
+    document.querySelector('#compose-recipients').value = email.sender;
+    document.querySelector('#compose-subject').value = subject;
+    document.querySelector('#compose-body').value = originalMessage;
+
+    // Autofocus on email body
+    let myModal = document.getElementById('mailModal');
+    let myInput = document.getElementById('compose-body');
+
+    myModal.addEventListener('shown.bs.modal', function () {
+        console.log('autofocus works')
+        myInput.focus();
+        myInput.setSelectionRange(0,0); //start at the beginning
+    })
+
+    sendEmail();
 }
 
 const renderEmailView = (email, mailbox) => {
@@ -322,34 +349,6 @@ const archiveEmail = (email) => {
         .catch((error) => {
             console.error('Error:', error);
         })
-}
-
-const reply = (email) => {
-    console.log('Calling function REPLY')
-    // Pre-fill recipient, subject and body
-    let subject = email.subject;
-    // Add Re: to subject
-    if (email.subject.substring(0, 3).toLowerCase() !== 're:') {
-        subject = 'Re: ' + email.subject;
-    }
-    // Add old conversations
-    let originalMessage = '\n-----------------------\n' + `On ${email.timestamp} ${email.sender} wrote:` + '\n' + email.body;
-
-    document.querySelector('#compose-recipients').value = email.sender;
-    document.querySelector('#compose-subject').value = subject;
-    document.querySelector('#compose-body').value = originalMessage;
-
-    // Autofocus on email body
-    let myModal = document.getElementById('mailModal');
-    let myInput = document.getElementById('compose-body');
-
-    myModal.addEventListener('shown.bs.modal', function () {
-        console.log('autofocus works')
-        myInput.focus();
-        myInput.setSelectionRange(0,0); //start at the beginning
-    })
-
-    sendEmail();
 }
 
 // Show compose view and hide other views
