@@ -302,7 +302,7 @@ const renderEmailView = (email, mailbox) => {
         document.getElementById('archive-container').innerHTML = '';
     } else {
         // Add archive event to btn:
-        document.getElementById('archiveButton').addEventListener('click', (event) => {
+        document.getElementById('archiveButton').addEventListener('click', () => {
             archiveEmail(email)
         });
     }
@@ -361,11 +361,6 @@ const showThisView = (divToShow) => {
             document.getElementById(div).style.display = 'none';
         }
     })
-}
-
-const test = () => {
-    console.log('test function works');
-    load_mailbox('sent');
 }
 
 // Remove the message after awhile
